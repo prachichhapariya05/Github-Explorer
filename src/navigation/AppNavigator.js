@@ -4,80 +4,80 @@ import {useTheme} from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen';
 import DetailsScreen from '../screens/DetailsScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
-import {StyleSheet, View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {TouchableOpacity, View, StyleSheet, Text} from 'react-native';
 
 const Stack = createStackNavigator();
 
-export default function AppNavigator() {
+export default function AppNavigator({toggleTheme, isDarkTheme}) {
   const {colors} = useTheme();
 
-  const headerStyles = {
-    headerStyle: {
-      backgroundColor: colors.card,
-      shadowColor: 'transparent',
-    },
-    headerTintColor: colors.text,
-    headerTitleStyle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.text,
-    },
-    headerTitleAlign: 'center',
-  };
-
-  const CustomHeaderTitle = ({title}) => (
-    <View style={styles.headerContainer}>
+  const headerLeft = () => (
+    <View style={styles.headerLeftContainer}>
       <Icon
         name="logo-github"
-        size={24}
+        size={30}
         color={colors.primary}
         style={styles.icon}
       />
-      <Text style={[styles.headerTitle, {color: colors.text}]}>{title}</Text>
+      <Text style={[styles.headerTitle, {color: colors.text}]}>
+        GitHub Explorer
+      </Text>
+    </View>
+  );
+
+  const headerRight = navigation => (
+    <View style={styles.headerRightContainer}>
+      <TouchableOpacity onPress={toggleTheme} style={styles.iconContainer}>
+        <Icon
+          name={isDarkTheme ? 'sunny' : 'moon'}
+          size={24}
+          color={colors.text}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Favorites')}
+        style={styles.iconContainer}>
+        <Icon name="heart" size={24} color={colors.text} />
+      </TouchableOpacity>
     </View>
   );
 
   return (
     <Stack.Navigator
-      initialRouteName="Home"
-      screenOptions={{
-        ...headerStyles,
-        headerTitle: props => <CustomHeaderTitle {...props} />,
-      }}>
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          headerTitle: () => <CustomHeaderTitle title="GitHub Explorer" />,
-        }}
-      />
-      <Stack.Screen
-        name="Details"
-        component={DetailsScreen}
-        options={{
-          headerTitle: () => <CustomHeaderTitle title="Repository Details" />,
-        }}
-      />
-      <Stack.Screen
-        name="Favorites"
-        component={FavoritesScreen}
-        options={{headerTitle: () => <CustomHeaderTitle title="Favorites" />}}
-      />
+      screenOptions={({navigation}) => ({
+        headerStyle: {backgroundColor: colors.card},
+        headerTintColor: colors.text,
+        headerLeft: headerLeft,
+        headerRight: () => headerRight(navigation),
+      })}>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Details" component={DetailsScreen} />
+      <Stack.Screen name="Favorites" component={FavoritesScreen} />
     </Stack.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
+  headerLeftContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginLeft: 10,
   },
   icon: {
-    marginRight: 8,
+    marginRight: 10,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#000',
+  },
+  headerRightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  iconContainer: {
+    marginLeft: 10,
   },
 });

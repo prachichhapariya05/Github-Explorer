@@ -7,8 +7,7 @@ export const fetchRepositories = async query => {
     const response = await axios.get(
       `${BASE_URL}/search/repositories?q=${query}`,
     );
-    console.log('response.data.items', response);
-    return response.data.items;
+    return response?.data?.items;
   } catch (error) {
     console.error(error);
     return [];
